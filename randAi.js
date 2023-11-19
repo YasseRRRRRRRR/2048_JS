@@ -1,59 +1,61 @@
 // ai.js
 
+
+let randomAIFlag = false;
+let randomIntervalId;
+let aiSpeed = 500; // Initial speed in milliseconds
+
 function startAI() {
-    // Function to start the AI playing the game
-    const intervalId = setInterval(() => {
+    randomIntervalId = setInterval(() => {
         // Generate a random move
         let randomMove = Math.floor(Math.random() * 4); // 0: Left, 1: Right, 2: Up, 3: Down
 
         // Perform the corresponding move
-        switch (randomMove) {
-            case 0:
-                slideLeft();
-                break;
-            case 1:
-                slideRight();
-                break;
-            case 2:
-                slideUp();
-                break;
-            case 3:
-                slideDown();
-                break;
-        }
+        performMove(getMoveName(randomMove));
 
         // Set a new tile after each move
         setTwo();
-        
+
         // Check for game over after each move
         if (isGameOver()) {
-            // Perform actions when the game is over for the AI
             console.log("AI Game Over!");
-
-            // Optionally, reset the game or display a message
-            resetGame(); // Add a function to reset the game
-            // Alternatively, display a message
-            // alert("AI Game Over! The game has been reset."); 
-
-            // Stop the AI interval
-            clearInterval(intervalId);
+            clearInterval(randomIntervalId);
         }
 
         // Update the score display
         document.getElementById("score").innerText = score;
-    }, 500); // Adjust the interval as needed
+    }, aiSpeed); // Set the interval based on the current speed
+
+    // Listen for the "m" key press to increase AI speed
+    document.addEventListener("keydown", handleKeyPress);
 }
 
-function resetGame() {
-    // Add code to reset the game
-    // You can reinitialize the board, score, and any other necessary variables
-    setGame();
-}
-
-
-document.addEventListener("keyup", (e) => {
-    if (e.code === "Space") {
-        // Start the AI when the space bar is pressed
+function handleKeyPress(e) {
+    if (e.code === "KeyM") {
+        // Increase the speed by reducing the interval
+        aiSpeed = Math.max(100, aiSpeed - 50);
+        console.log(`AI Speed increased! New speed: ${aiSpeed} milliseconds`);
+        // Restart the AI with the new speed
+        clearInterval(randomIntervalId);
         startAI();
     }
-});
+}
+
+// Helper function to convert move number to move name
+function getMoveName(move) {
+    switch (move) {
+        case 0:
+            return "left";
+        case 1:
+            return "right";
+        case 2:
+            return "up";
+        case 3:
+            return "down";
+    }
+}
+
+function stopRandomAI() {
+    clearInterval(randomIntervalId);
+    randomAIFlag = false; // Reset the flag
+}

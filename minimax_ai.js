@@ -1,11 +1,23 @@
 // minimax_ai.js
+let minimaxIntervalId;
+let minimaxAIFlag = false;
+let minimaxSpeed = 500; // Initial speed in milliseconds
+
+
+
+// ... (rest of your Minimax AI code)
+
+
 
 // Constants for moves
 const MOVES = ["left", "right", "up", "down"];
 
 function startMinimaxAI() {
-    const intervalId = setInterval(() => {
+    
+    minimaxIntervalId = setInterval(() => {
+
         let bestMove = minimax(board, 2, true); // Adjust the depth as needed
+
 
         // Perform the corresponding move
         performMove(bestMove);
@@ -16,7 +28,7 @@ function startMinimaxAI() {
         // Check for game over after each move
         if (isGameOver()) {
             console.log("Minimax AI Game Over!");
-            clearInterval(intervalId);
+            clearInterval(minimaxIntervalId);
         }
 
         // Update the score display
@@ -92,16 +104,16 @@ function simulateMove(board, move) {
     let newBoard = JSON.parse(JSON.stringify(board));
     switch (move) {
         case "left":
-            slideLeft(newBoard);
+            simulateSlideLeft(newBoard);
             break;
         case "right":
-            slideRight(newBoard);
+            simulateSlideRight(newBoard);
             break;
         case "up":
-            slideUp(newBoard);
+            simulateSlideUp(newBoard);
             break;
         case "down":
-            slideDown(newBoard);
+            simulateSlideDown(newBoard);
             break;
     }
     return newBoard;
@@ -125,10 +137,76 @@ function performMove(move) {
     }
 }
 
-
-document.addEventListener("keyup", (e) => {
-    if (e.code === "KeyM") {
-        // Start the Minimax AI when the 'm' key is pressed
-        startMinimaxAI();
+function simulateSlideLeft() {
+    for (let r = 0; r < rows; r++) {
+        let row = board[r];
+        row = slide(row);
+        board[r] = row;
+        for (let c = 0; c < columns; c++) {
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            let num = board[r][c];
+            updateTile(tile, num);
+        }
     }
-});
+}
+
+function simulateSlideUp() {
+
+    for (let c = 0; c < columns; c++) {
+        let row = [board[0][c], board[1][c], board[2][c], board[3][c]];
+        row = slide(row);
+        // board[0][c] = row[0];
+        // board[1][c] = row[1];
+        // board[2][c] = row[2];
+        // board[3][c] = row[3];
+        for (let r = 0; r < rows; r++) {
+            board[r][c] = row[r];
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            let num = board[r][c];
+            updateTile(tile, num);
+        }
+    }
+    // 
+}
+function simulateSlideRight() {
+    for (let r = 0; r < rows; r++) {
+        let row = board[r];
+        row.reverse();
+        row = slide(row);
+        row.reverse();
+        board[r] = row;
+        for (let c = 0; c < columns; c++) {
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            let num = board[r][c];
+            updateTile(tile, num);
+        }
+    }
+
+}
+
+function simulateSlideDown() {
+
+    for (let c = 0; c < columns; c++) {
+        let row = [board[0][c], board[1][c], board[2][c], board[3][c]];
+        row.reverse();
+        row = slide(row);
+        row.reverse();
+        for (let r = 0; r < rows; r++) {
+            board[r][c] = row[r];
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            let num = board[r][c];
+            updateTile(tile, num);
+        }
+    }
+    // 
+}
+function stopMinimaxAI() {
+    clearInterval(minimaxIntervalId);
+    minimaxAIFlag = false; // Reset the flag
+}
+
+
+function mapMoveToArrowKey(move) {
+    const arrowKeys = ["left", "up", "right", "down"];
+    return arrowKeys[move];
+}

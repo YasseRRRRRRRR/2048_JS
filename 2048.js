@@ -1,3 +1,5 @@
+
+
 var board;
 var score = 0;
 var rows = 4;
@@ -15,12 +17,12 @@ function setGame() {
     //         [4, 4, 1024, 8],
     //         [32, 64, 128, 128]
     //     ];
-        board = [
-            [0, 0, 0, 0],
-            [0, 0, 0, 0],
-            [0, 0, 0, 0],
-            [0, 0, 0, 0]
-        ]
+    board = [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+    ]
 
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < columns; c++) {
@@ -38,7 +40,7 @@ function setGame() {
 function hasEmptyTile() {
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < columns; c++) {
-            if(board[r][c] == 0) {
+            if (board[r][c] == 0) {
                 return true;
             }
         }
@@ -83,22 +85,57 @@ function updateTile(tile, num) {
 
 
 document.addEventListener("keyup", (e) => {
-    if (e.code == "ArrowLeft") {
+    if (e.code == "KeyA" && isMoveLeft()) {
+        updateKeyColor("left");
         slideLeft();
-        setTwo()
+        setTwo();
+        stopAllAIs();
     }
-    else if (e.code == "ArrowRight") {
+    else if (e.code == "KeyD" && isMoveRight()) {
+        updateKeyColor("right");
         slideRight();
-        setTwo()
+        setTwo();
+        stopAllAIs();
     }
-    else if (e.code == "ArrowUp") {
+    else if (e.code == "KeyW" && isMoveUp()) {
+        updateKeyColor("up");
         slideUp();
-        setTwo()
+        setTwo();
+        stopAllAIs();
     }
-    else if (e.code == "ArrowDown") {
+    else if (e.code == "KeyS" && isMoveDown()) {
+        updateKeyColor("down");
         slideDown();
-        setTwo()
+        setTwo();
+        stopAllAIs();
     }
+    else if (e.code === "KeyE") {
+        stopRandomAI();
+        // Increase the speed by reducing the interval
+        minimaxSpeed = Math.max(0, minimaxSpeed - 50);
+        console.log(`Minimax AI Speed increased! New speed: ${minimaxSpeed} milliseconds`);
+        // Restart the Minimax AI with the new speed
+        clearInterval(minimaxIntervalId);
+        startMinimaxAI();
+    }
+    else if (e.code === "KeyQ") {
+        stopMinimaxAI();
+        // Increase the speed by reducing the interval
+        aiSpeed = Math.max(100, aiSpeed - 50);
+        console.log(`AI Speed increased! New speed: ${aiSpeed} milliseconds`);
+        // Restart the AI with the new speed
+        clearInterval(randomIntervalId);
+        startAI();
+    }
+    else if (e.code == "Space") {
+        // Stop both AIs if "t" is pressed
+        stopAllAIs();
+    }
+    else if (e.code == "KeyR") {
+        // Stop both AIs if "t" is pressed
+        location.reload();
+    }
+
     document.getElementById("score").innerText = score;
 
     isGameOver();
@@ -130,6 +167,7 @@ function slide(row) {
 
 
 function slideLeft() {
+    updateKeyColor("left");
     for (let r = 0; r < rows; r++) {
         let row = board[r];
         row = slide(row);
@@ -140,10 +178,12 @@ function slideLeft() {
             updateTile(tile, num);
         }
     }
+    // updateKeyColor("left");
 }
 
 
 function slideRight() {
+    updateKeyColor("right");
     for (let r = 0; r < rows; r++) {
         let row = board[r];
         row.reverse();
@@ -156,9 +196,11 @@ function slideRight() {
             updateTile(tile, num);
         }
     }
+    // updateKeyColor("right");
 }
 
 function slideUp() {
+    updateKeyColor("up");
     for (let c = 0; c < columns; c++) {
         let row = [board[0][c], board[1][c], board[2][c], board[3][c]];
         row = slide(row);
@@ -173,9 +215,11 @@ function slideUp() {
             updateTile(tile, num);
         }
     }
+    // updateKeyColor("up");
 }
 
 function slideDown() {
+    updateKeyColor("down");
     for (let c = 0; c < columns; c++) {
         let row = [board[0][c], board[1][c], board[2][c], board[3][c]];
         row.reverse();
@@ -188,6 +232,7 @@ function slideDown() {
             updateTile(tile, num);
         }
     }
+    // updateKeyColor("down");
 }
 function isGameOver() {
     // Check if there are any empty tiles
@@ -196,46 +241,73 @@ function isGameOver() {
     }
 
     // Check for possible moves in all directions
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < columns; c++) {
-            let currentTile = board[r][c];
-
-            // Check left
-            if (c > 0 && currentTile === board[r][c - 1]) {
-                return false;
-            }
-
-            // Check right
-            if (c < columns - 1 && currentTile === board[r][c + 1]) {
-                return false;
-            }
-
-            // Check up
-            if (r > 0 && currentTile === board[r - 1][c]) {
-                return false;
-            }
-
-            // Check down
-            if (r < rows - 1 && currentTile === board[r + 1][c]) {
-                return false;
-            }
-        }
-    }
-    // updateTile(tile, num);
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < columns; c++) {
-            let tile = document.getElementById(r.toString() + "-" + c.toString());
-            let num = board[r][c];
-            updateTile(tile, num);
-        }
-    }
-
-    // If no possible moves, the game is over
-    if (confirm("Game Over! Your score is: " + score + "\nDo you want to play again?")) {
-        // Reload the page
-        location.reload();
-    }
-
-    return true;
+    return !(isMoveLeft() || isMoveRight() || isMoveUp() || isMoveDown());
 }
 
+function isMoveLeft() {
+    for (let r = 0; r < rows; r++) {
+        for (let c = 1; c < columns; c++) {
+            if (board[r][c] === board[r][c - 1] || board[r][c - 1] === 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function isMoveRight() {
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < columns - 1; c++) {
+            if (board[r][c] === board[r][c + 1] || board[r][c + 1] === 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function isMoveUp() {
+    for (let r = 1; r < rows; r++) {
+        for (let c = 0; c < columns; c++) {
+            if (board[r][c] === board[r - 1][c] || board[r - 1][c] === 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function isMoveDown() {
+    for (let r = 0; r < rows - 1; r++) {
+        for (let c = 0; c < columns; c++) {
+            if (board[r][c] === board[r + 1][c] || board[r + 1][c] === 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function stopAllAIs() {
+    // Stop all AIs and reset corresponding flags
+    stopRandomAI();
+    stopMinimaxAI();
+}
+
+function updateKeyColor(direction) {
+    console.log("Updating key color for direction:", direction);
+    // Remove the background color from all arrow keys
+    const arrowKeys = document.querySelectorAll(".arrow_keys");
+    arrowKeys.forEach(key => key.style.backgroundColor = "");
+
+    // Set the background color for the corresponding arrow key
+    const arrowKey = document.getElementById(direction);
+    if (arrowKey) {
+        arrowKey.style.backgroundColor = "yellow"; // Set your desired color
+
+
+        setTimeout(() => {
+            arrowKey.style.backgroundColor = "";
+        }, 150);
+    }
+}
