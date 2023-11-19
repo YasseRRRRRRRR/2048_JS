@@ -5,7 +5,7 @@ const MOVES = ["left", "right", "up", "down"];
 
 function startMinimaxAI() {
     const intervalId = setInterval(() => {
-        let bestMove = minimax(board, 3, true); // Adjust the depth as needed
+        let bestMove = minimax(board, 2, true); // Adjust the depth as needed
 
         // Perform the corresponding move
         performMove(bestMove);
@@ -24,6 +24,38 @@ function startMinimaxAI() {
     }, 500); // Adjust the interval as needed
 }
 
+// function minimax(board, depth, maximizingPlayer) {
+//     // Terminal condition: Check if the given depth is 0 or game over
+//     if (depth === 0 || isGameOver()) {
+//         // Evaluate the current state using the PERFECT_SNAKE heuristic
+//         return evaluateHeuristic(board);
+//     }
+
+//     if (maximizingPlayer) {
+//         let maxEval = -Infinity;
+
+//         // Iterate over all possible moves
+//         for (let move of MOVES) {
+//             let newBoard = simulateMove(board, move);
+//             let eval = minimax(newBoard, depth - 1, false);
+//             maxEval = Math.max(maxEval, eval);
+//         }
+
+//         return maxEval;
+//     } else {
+//         let minEval = Infinity;
+
+//         // Iterate over all possible moves
+//         for (let move of MOVES) {
+//             let newBoard = simulateMove(board, move);
+//             let eval = minimax(newBoard, depth - 1, true);
+//             minEval = Math.min(minEval, eval);
+//         }
+
+//         return minEval;
+//     }
+// }
+//skipped the minimizing step since this isn't a game like chess where the opponents moves have impact in order to save on computing power
 function minimax(board, depth, maximizingPlayer) {
     // Terminal condition: Check if the given depth is 0 or game over
     if (depth === 0 || isGameOver()) {
@@ -31,30 +63,18 @@ function minimax(board, depth, maximizingPlayer) {
         return evaluateHeuristic(board);
     }
 
-    if (maximizingPlayer) {
-        let maxEval = -Infinity;
+    let bestEval = maximizingPlayer ? -Infinity : Infinity;
 
-        // Iterate over all possible moves
-        for (let move of MOVES) {
-            let newBoard = simulateMove(board, move);
-            let eval = minimax(newBoard, depth - 1, false);
-            maxEval = Math.max(maxEval, eval);
-        }
-
-        return maxEval;
-    } else {
-        let minEval = Infinity;
-
-        // Iterate over all possible moves
-        for (let move of MOVES) {
-            let newBoard = simulateMove(board, move);
-            let eval = minimax(newBoard, depth - 1, true);
-            minEval = Math.min(minEval, eval);
-        }
-
-        return minEval;
+    // Iterate over all possible moves
+    for (let move of MOVES) {
+        let newBoard = simulateMove(board, move);
+        let eval = minimax(newBoard, depth - 1, !maximizingPlayer);
+        bestEval = maximizingPlayer ? Math.max(bestEval, eval) : Math.min(bestEval, eval);
     }
+
+    return bestEval;
 }
+
 
 function evaluateHeuristic(board) {
     // Simple heuristic: Sum of values on the board
