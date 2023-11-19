@@ -75,6 +75,7 @@ hr {
     transition: all 0.2s ease-in-out;
 }
 
+
 .x2 {
     background-color: var(--tile2_bk_color);
     color: var(--tile2_color)

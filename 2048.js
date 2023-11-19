@@ -10,11 +10,11 @@ window.onload = function () {
 function setGame() {
     // test
     // board = [
-        //     [32, 2, 32, 2],
-        //     [64, 2, 2, 128],
-        //     [4, 4, 1024, 8],
-        //     [32, 64, 128, 128]
-        // ];
+    //         [32, 2, 32, 2],
+    //         [64, 2, 2, 128],
+    //         [4, 4, 1024, 8],
+    //         [32, 64, 128, 128]
+    //     ];
         board = [
             [0, 0, 0, 0],
             [0, 0, 0, 0],
@@ -79,6 +79,9 @@ function updateTile(tile, num) {
     }
 }
 
+
+
+
 document.addEventListener("keyup", (e) => {
     if (e.code == "ArrowLeft") {
         slideLeft();
@@ -123,6 +126,8 @@ function slide(row) {
 
     return row;
 }
+
+
 
 function slideLeft() {
     for (let r = 0; r < rows; r++) {
@@ -184,7 +189,6 @@ function slideDown() {
         }
     }
 }
-
 function isGameOver() {
     // Check if there are any empty tiles
     if (hasEmptyTile()) {
@@ -217,10 +221,21 @@ function isGameOver() {
             }
         }
     }
+    // updateTile(tile, num);
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < columns; c++) {
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            let num = board[r][c];
+            updateTile(tile, num);
+        }
+    }
 
     // If no possible moves, the game is over
-    alert("Game Over! Your score is: " + score);
-    // Optionally, you can reload the game or perform other actions here
+    if (confirm("Game Over! Your score is: " + score + "\nDo you want to play again?")) {
+        // Reload the page
+        location.reload();
+    }
 
     return true;
 }
+
