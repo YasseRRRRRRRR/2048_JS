@@ -130,6 +130,7 @@ document.addEventListener("keyup", (e) => {
     else if (e.code == "Space") {
         // Stop both AIs if "t" is pressed
         stopAllAIs();
+        updateKeyColor("Space")
     }
     else if (e.code == "KeyR") {
         // Stop both AIs if "t" is pressed
@@ -303,7 +304,7 @@ function updateKeyColor(direction) {
     // Set the background color for the corresponding arrow key
     const arrowKey = document.getElementById(direction);
     if (arrowKey) {
-        arrowKey.style.backgroundColor = "yellow"; // Set your desired color
+        arrowKey.style.backgroundColor = "#ecc230"; // Set your desired color
 
 
         setTimeout(() => {
