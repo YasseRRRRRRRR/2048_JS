@@ -1,4 +1,5 @@
-
+const gameOverElem = document.getElementById('game-over');
+const restartBtn = document.getElementById("restart-btn");
 
 var board;
 var score = 0;
@@ -6,7 +7,28 @@ var rows = 4;
 var columns = 4;
 
 window.onload = function () {
+    // Check if the restartBtn element is not null before adding the event listener
+    if (restartBtn) {
+        restartBtn.addEventListener("click", () => {
+            // Call the function to hide the game-over div
+            hideGameOver();
+
+            // Add any additional logic you need to reset the game
+            setGame();
+        });
+    }
+
+    // Call the initial setup function
     setGame();
+};
+
+
+function showGameOver() {
+    gameOverElem.style.display = "flex";
+}
+
+function hideGameOver() {
+    gameOverElem.style.display = "none";
 }
 
 function setGame() {
@@ -112,7 +134,7 @@ document.addEventListener("keyup", (e) => {
     else if (e.code === "KeyE") {
         stopRandomAI();
         // Increase the speed by reducing the interval
-        minimaxSpeed = Math.max(0, minimaxSpeed - 50);
+        minimaxSpeed = Math.max(10, minimaxSpeed - 50);
         console.log(`Minimax AI Speed increased! New speed: ${minimaxSpeed} milliseconds`);
         // Restart the Minimax AI with the new speed
         clearInterval(minimaxIntervalId);
@@ -121,7 +143,7 @@ document.addEventListener("keyup", (e) => {
     else if (e.code === "KeyQ") {
         stopMinimaxAI();
         // Increase the speed by reducing the interval
-        aiSpeed = Math.max(100, aiSpeed - 50);
+        aiSpeed = Math.max(10, aiSpeed - 50);
         console.log(`AI Speed increased! New speed: ${aiSpeed} milliseconds`);
         // Restart the AI with the new speed
         clearInterval(randomIntervalId);
@@ -136,10 +158,11 @@ document.addEventListener("keyup", (e) => {
         // Stop both AIs if "t" is pressed
         location.reload();
     }
-
-    document.getElementById("score").innerText = score;
-
-    isGameOver();
+    else if (isGameOver()) {
+        // Call the function to display the game-over div
+        showGameOver();
+    }
+    
 })
 
 function filterZero(row) {

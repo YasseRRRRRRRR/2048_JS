@@ -20,6 +20,7 @@ function startAI() {
         if (isGameOver()) {
             console.log("AI Game Over!");
             clearInterval(randomIntervalId);
+            showGameOver();
         }
 
         // Update the score display
